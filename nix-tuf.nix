@@ -183,6 +183,10 @@ in
     wineWowPackages.stable 
     winetricks
     vlc
+    teams
+    slack
+    obs-studio
+    
   ];
 
 
