@@ -16,7 +16,7 @@
 
   networking.hostName = "sevenofnine";
   networking.networkmanager.enable = true;
-  networking.firewall.enable = true;
+  networking.firewall.enable = false;
   networking.nftables.enable = true;
   time.timeZone = "America/New_York";
 
@@ -82,9 +82,6 @@ systemd.services."nc-cron" = {
       #cmd = [];
      };
    };
-  # Firewall Ports
-  networking.firewall.allowedTCPPorts = [ 22 80 81 443 9443 ]; #ssh,http,https,npm,portainer
-  networking.firewall.allowedUDPPorts = [ 22 80 81 443 9443 ]; #ssh,http,https,npm,portainer
 
   documentation.enable = false; # documentation of packages
   documentation.nixos.enable = false; # nixos documentation
