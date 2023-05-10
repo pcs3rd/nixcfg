@@ -14,7 +14,7 @@
   boot.loader.systemd-boot.configurationLimit=10;
   boot.loader.timeout = 0;
 
-  networking.hostName = "docker";
+  networking.hostName = "humptydumpty";
   networking.networkmanager.enable = true;
   networking.firewall.enable = true;
   networking.nftables.enable = true;
