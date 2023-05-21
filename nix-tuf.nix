@@ -58,14 +58,69 @@ in
         krita
         libreoffice
         cura
-        lsp-plugins
         vscode
         nodejs
         obs-studio
-	gh
+	       gh
         vial
-        steam-tui
         steam-run
+        teams
+        slack
+        #audio plugins
+        vcv-rack
+        cardinal
+        lsp-plugins
+        ladspaPlugins
+        zam-plugins
+        synthv1
+        tunefish
+        x42-plugins
+        aether-lv2
+        drumgizmo
+        petrifoo
+        jamin
+        jaaa
+        cli-visualizer
+        aumix
+        jackmix
+        linssid
+        mamba
+        japa
+        jacktrip
+        wavemon
+        gphoto2
+        ffmpeg-full
+        v4l-utils
+        audacity
+        openscad
+        #WASP-OS development
+        libgccjit
+        libcxx
+        gnumake42
+        sphinx
+        graphviz
+        SDL2
+        SDL2_ttf
+        SDL2_gfx
+        unzip
+        python310Full
+        python310Packages.pillow
+        python310Packages.pexpect
+        python310Packages.click
+        python310Packages.pygobject3
+        python310Packages.numpy
+        python310Packages.pydbus
+        python310Packages.pyserial
+        python310Packages.cbor
+        python310Packages.pysdl2
+        python310Packages.tomli
+        python310Packages.recommonmark
+        python310Packages.cryptography
+        python310Packages.pytest
+        python310Packages.setuptools
+        itd
+        watchmate
+      
     ];
       home.stateVersion = "22.11";
   programs.git = {
@@ -77,9 +132,9 @@ in
     "org/gnome/shell" = {
       command-history = [ "lg" ];
       disable-user-extensions = false;
-      disabled-extensions = [ "native-window-placement@gnome-shell-extensions.gcampax.github.com" "screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com" "trayIconsReloaded@selfmade.pl" "workspace-indicator@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "vertical-workspaces@G-dH.github.com"];
+      disabled-extensions = [ "native-window-placement@gnome-shell-extensions.gcampax.github.com" "screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com" "trayIconsReloaded@selfmade.pl" "workspace-indicator@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "vertical-workspaces@G-dH.github.com" "chrome-kedolomibeipjfpgimbgogkpojhpkgmj-Default.desktop" ];
       enabled-extensions = [ "apps-menu@gnome-shell-extensions.gcampax.github.com" "just-perfection-desktop@just-perfection" "drive-menu@gnome-shell-extensions.gcampax.github.com" "appindicatorsupport@rgcjonas.gmail.com" "blur-my-shell@aunetx" "dash-to-dock@micxgx.gmail.com" "clipboard-indicator@tudmotu.com" "user-theme@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com"  ];
-      favorite-apps = [ "org.gnome.Console.desktop" "org.gnome.Nautilus.desktop" "google-chrome.desktop" "discord.desktop" "org.prismlauncher.PrismLauncher.desktop" "chrome-ehcljolipkikggmbpmdijefmppdgemlf-Default.desktop" "code.desktop"];
+      favorite-apps = [ "org.gnome.Console.desktop" "org.gnome.Nautilus.desktop" "google-chrome.desktop" "discord.desktop" "org.prismlauncher.PrismLauncher.desktop" "chrome-ehcljolipkikggmbpmdijefmppdgemlf-Default.desktop" "code.desktop" "slack.desktop" "steam.desktop"];
       last-selected-power-profile = "performance";
       welcome-dialog-last-shown-version = "44.0";
     };
@@ -133,6 +188,8 @@ in
       app-menu-label = false;
       notification-banner-position = 1;
       search = false;
+      theme = true;
+      workspace-switcher-should-show = true;
       workspaces-in-app-grid = true;
     };
 
@@ -145,10 +202,11 @@ in
     "org/gnome/shell/world-clocks" = {
       locations = "@av []";
     };
-    "org/gnome/dekstop/interface" = {
+    "org/gnome/desktop/interface" = {
       clock-format = "12h";
       color-scheme = "prefer-dark";
       enable-animations = true;
+      clock-show-seconds = true;
     };
 
   };
@@ -183,12 +241,7 @@ in
     wineWowPackages.stable 
     winetricks
     vlc
-    teams
-    slack
-    obs-studio
-    
   ];
-
 
   programs.steam.enable = true;
   programs.mtr.enable = true;
@@ -237,9 +290,15 @@ in
     jack.enable = true;
   };
 
+ 
+
   environment.sessionVariables = rec { #set default session latency
-    PIPEWIRE_LATENCY = "32/48000";
+    PIPEWIRE_LATENCY = "64/48000";
   };
+  programs.bash.shellAliases = {
+    dslr2loopback = "gphoto2 --stdout --capture-movie | ffmpeg -i - -vcodec rawvideo -pix_fmt yuv420p -threads 0 -f v4l2 /dev/video1";
+  };
+
 	#Prime offloading maybe?
   hardware.nvidia.prime = {
     offload.enable = lib.mkForce true;
@@ -250,7 +309,6 @@ in
   nixpkgs.config.allowUnfree = true;
   system.copySystemConfiguration = true;
   nix.settings.experimental-features = [ "flakes" "nix-command" ];
-  system.stateVersion = "22.11"; # Did you read the comment?
+  system.stateVersion = "23.05"; # Did you read the comment?
 }
-
 
