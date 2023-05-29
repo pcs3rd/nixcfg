@@ -76,7 +76,6 @@ in
         tunefish
         x42-plugins
         aether-lv2
-        drumgizmo
         petrifoo
         jamin
         jaaa
@@ -120,14 +119,11 @@ in
         python310Packages.setuptools
         itd
         watchmate
-      
+        osu-lazer
+        gparted
+        rcon
     ];
       home.stateVersion = "23.05";
-  programs.git = {
-    enable = true;
-    userName  = "pcs3rd";
-    userEmail = "rhean1620@gmail.com";
-  };
   dconf.settings = {
     "org/gnome/shell" = {
       command-history = [ "lg" ];
@@ -241,6 +237,8 @@ in
     wineWowPackages.stable 
     winetricks
     vlc
+    cups
+    hplip
   ];
 
   programs.steam.enable = true;
@@ -277,7 +275,13 @@ in
   hardware.opengl.enable = true;
   services.xserver.videoDrivers = [ "nvidia" ];
   services.udev.packages = with pkgs; [ gnome.gnome-settings-daemon ];
- 
+
+  services.printing.enable = true;
+  services.avahi.enable = true;
+  services.avahi.nssmdns = true;
+  # for a WiFi printer
+  services.avahi.openFirewall = true;
+
   hardware.pulseaudio.enable = false;
   musnix.enable = true;
   sound.enable = true;
@@ -309,6 +313,6 @@ in
   nixpkgs.config.allowUnfree = true;
   system.copySystemConfiguration = true;
   nix.settings.experimental-features = [ "flakes" "nix-command" ];
-  system.stateVersion = "23.05"; # Did you read the comment?
+  system.stateVersion = "22.11"; # Did you read the comment?
 }
 
