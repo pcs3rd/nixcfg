@@ -224,7 +224,6 @@ in
     gnomeExtensions.blur-my-shell
     gnomeExtensions.user-themes
     gnomeExtensions.quick-settings-tweaker
-    gnomeExtensions.search-light
     gnome.adwaita-icon-theme
     gnome.gvfs
     gnome.sushi

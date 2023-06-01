@@ -5,7 +5,8 @@
 
 { config, pkgs, ... }:
 let
-  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/master.tar.gz";
+  system_StateVersion = "23.05"; #Use this to select system versio
+  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-${system_StateVersion}.tar.gz";
 
 in
 {
@@ -32,16 +33,15 @@ in
   home-manager.users.nixos = {
     home.username = "nixos";
     home.homeDirectory = "/home/nixos";
-    home.stateVersion = "22.11";
+    home.stateVersion = "${system_StateVersion}";
 
   #Enable my extensions
-  dconf.settings = {
+   dconf.settings = {
     "org/gnome/shell" = {
       command-history = [ "lg" ];
       disable-user-extensions = false;
-      disabled-extensions = [ "native-window-placement@gnome-shell-extensions.gcampax.github.com" "screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com" "trayIconsReloaded@selfmade.pl" "workspace-indicator@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "vertical-workspaces@G-dH.github.com"];
-      enabled-extensions = [ "apps-menu@gnome-shell-extensions.gcampax.github.com" "just-perfection-desktop@just-perfection" "drive-menu@gnome-shell-extensions.gcampax.github.com" "appindicatorsupport@rgcjonas.gmail.com" "blur-my-shell@aunetx" "dash-to-dock@micxgx.gmail.com" "clipboard-indicator@tudmotu.com" "user-theme@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com"  ];
-      favorite-apps = [ "org.gnome.Console.desktop" "org.gnome.Nautilus.desktop" "google-chrome.desktop" "discord.desktop" "org.prismlauncher.PrismLauncher.desktop" "chrome-ehcljolipkikggmbpmdijefmppdgemlf-Default.desktop" "code.desktop"];
+      disabled-extensions = [ "native-window-placement@gnome-shell-extensions.gcampax.github.com" "screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com" "trayIconsReloaded@selfmade.pl" "workspace-indicator@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "vertical-workspaces@G-dH.github.com" "chrome-kedolomibeipjfpgimbgogkpojhpkgmj-Default.desktop" ];
+      enabled-extensions = [ "apps-menu@gnome-shell-extensions.gcampax.github.com" "just-perfection-desktop@just-perfection" "drive-menu@gnome-shell-extensions.gcampax.github.com" "appindicatorsupport@rgcjonas.gmail.com" "blur-my-shell@aunetx" "dash-to-dock@micxgx.gmail.com" "clipboard-indicator@tudmotu.com" "user-theme@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" ];
       last-selected-power-profile = "performance";
       welcome-dialog-last-shown-version = "44.0";
     };
@@ -60,8 +60,8 @@ in
     "org/gnome/shell/extensions/blur-my-shell/dash-to-dock" = {
       blur = true;
       override-background = true;
-      style-dash-to-dock = 0;
-      unblur-in-overview = false;
+      style-dash-to-dock = 2;
+      unblur-in-overview = true;
     };
 
     "org/gnome/shell/extensions/blur-my-shell/hidetopbar" = {
@@ -71,6 +71,9 @@ in
     "org/gnome/shell/extensions/blur-my-shell/panel" = {
       customize = false;
       static-blur = true;
+      blur = true;
+      style-panel = 2;
+      override-background = true;
     };
 
     "org/gnome/shell/extensions/dash-to-dock" = {
@@ -92,9 +95,12 @@ in
     "org/gnome/shell/extensions/just-perfection" = {
       activities-button = false;
       app-menu = true;
-      app-menu-label = false;
+      app-menu-label = true;
+      app-menu-icon = false;
       notification-banner-position = 1;
       search = false;
+      theme = true;
+      workspace-switcher-should-show = true;
       workspaces-in-app-grid = true;
     };
 
@@ -107,13 +113,14 @@ in
     "org/gnome/shell/world-clocks" = {
       locations = "@av []";
     };
-    "org/gnome/dekstop/interface" = {
+    "org/gnome/desktop/interface" = {
       clock-format = "12h";
       color-scheme = "prefer-dark";
       enable-animations = true;
+      clock-show-seconds = true;
     };
   };
-  };
+};
 #System Packages
   environment.systemPackages = with pkgs; [
     nano
@@ -124,11 +131,11 @@ in
     gnomeExtensions.tray-icons-reloaded
     gnomeExtensions.dash-to-dock
     gnomeExtensions.dash-to-dock-animator
-    gnomeExtensions.applications-menu
-    gnomeExtensions.places-status-indicator
     gnomeExtensions.just-perfection
     gnomeExtensions.clipboard-indicator
     gnomeExtensions.blur-my-shell
+    gnomeExtensions.user-themes
+    gnomeExtensions.quick-settings-tweaker
     gnome.adwaita-icon-theme
     gparted
   ];
@@ -184,5 +191,5 @@ in
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "flakes" "nix-command" ];
   system.copySystemConfiguration = true;
-  system.stateVersion = "22.11";
+  system.stateVersion = "${system_StateVersion}";
 }
