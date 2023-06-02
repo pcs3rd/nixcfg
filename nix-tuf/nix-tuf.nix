@@ -6,7 +6,7 @@
 { config, pkgs, lib, ... }:
 with lib; 
 let
-  system_StateVersion = "23.05"; #Use this to select system versio
+  system_StateVersion = "23.05";
   nvidia-offload = pkgs.writeShellScriptBin "nvidia-offload" ''
     export __NV_PRIME_RENDER_OFFLOAD=1
     export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
@@ -121,12 +121,14 @@ in
     ];
       home.stateVersion = "${system_StateVersion}";
   dconf.settings = {
+    "org/gnome/mutter" = {
+      workspaces-only-on-primary = false;
+    };
     "org/gnome/shell" = {
-      command-history = [ "lg" ];
       disable-user-extensions = false;
       disabled-extensions = [ "native-window-placement@gnome-shell-extensions.gcampax.github.com" "screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com" "trayIconsReloaded@selfmade.pl" "workspace-indicator@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "vertical-workspaces@G-dH.github.com" "chrome-kedolomibeipjfpgimbgogkpojhpkgmj-Default.desktop" ];
       enabled-extensions = [ "apps-menu@gnome-shell-extensions.gcampax.github.com" "just-perfection-desktop@just-perfection" "drive-menu@gnome-shell-extensions.gcampax.github.com" "appindicatorsupport@rgcjonas.gmail.com" "blur-my-shell@aunetx" "dash-to-dock@micxgx.gmail.com" "clipboard-indicator@tudmotu.com" "user-theme@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" ];
-      favorite-apps = [ "org.gnome.Console.desktop" "org.gnome.Nautilus.desktop" "google-chrome.desktop" "discord.desktop" "org.prismlauncher.PrismLauncher.desktop" "chrome-ehcljolipkikggmbpmdijefmppdgemlf-Default.desktop" "code.desktop" "slack.desktop" "steam.desktop"];
+      favorite-apps = [ "org.gnome.Console.desktop" "org.gnome.Nautilus.desktop" "google-chrome.desktop" "discord.desktop" "org.prismlauncher.PrismLauncher.desktop" "chrome-ehcljolipkikggmbpmdijefmppdgemlf-Default.desktop" "code.desktop" "slack.desktop" "chrome-cifhbcnohmdccbgoicgdjpfamggdegmo-Default.desktop" "steam.desktop"];
       last-selected-power-profile = "performance";
       welcome-dialog-last-shown-version = "44.0";
     };
@@ -224,6 +226,7 @@ in
     gnomeExtensions.blur-my-shell
     gnomeExtensions.user-themes
     gnomeExtensions.quick-settings-tweaker
+    gnomeExtensions.search-light
     gnome.adwaita-icon-theme
     gnome.gvfs
     gnome.sushi
