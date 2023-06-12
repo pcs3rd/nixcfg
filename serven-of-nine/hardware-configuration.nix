@@ -14,21 +14,12 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "none";
-      fsType = "tmpfs";
-      options = [ "size=3G" "mode=755" ]; # mode=755 so only root can write to those files
-    };
-  fileSystems."/nix" =  
-    { device = "/dev/disk/by-label/NIX";
+    { device = "/dev/disk/by-uuid/c3105eb4-5407-4508-96a1-f6a61054bd8c";
       fsType = "ext4";
-    };
-  fileSystems."/" =
-    { device = "none";
-      fsType = "tmpfs";
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-label/BOOT";
+    { device = "/dev/disk/by-uuid/0A3C-66D1";
       fsType = "vfat";
     };
 
