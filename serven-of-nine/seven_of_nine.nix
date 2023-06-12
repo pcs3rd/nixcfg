@@ -16,12 +16,13 @@
       "/etc/nixos"    # bind mounted from /nix/persist/system/etc/nixos to /etc/nixos
       "/etc/NetworkManager"
     ];
-  # Use systemd-boot  
+ # Use systemd-boot  
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit=10;
-  boot.loader.timeout = 0;
+  boot.loader.timeout = 1;
 
+#  networking.interfaces.enp1s0.macAddress = "40:6C:8F:BC:52:2F";
   networking.hostName = "sevenofnine";
   networking.networkmanager.enable = true;
   networking.firewall.enable = false;
@@ -46,6 +47,14 @@
      initialPassword = "changeme";
      # packages = with pkgs; [     ];
   };
+
+#USE GOOGLE AUTHENTICATOR TOTP CODES FOR SSH
+  security.pam.services = {
+    sshd.googleAuthenticator.enable = true;
+  };
+  services.openssh.settings.ChallengeResponseAuthentication = true;
+  services.openssh.settings.PasswordAuthentication = true;
+
   environment.variables = {
     "EDITOR" = "nano";
   };
@@ -55,6 +64,11 @@
     git
     docker
     docker-compose
+    google-authenticator
+    tmux
+    feh
+    browsh
+    firefox
   ];
 
 # Services
@@ -84,13 +98,16 @@ systemd.services."nc-cron" = {
   virtualisation.oci-containers.backend = "docker";
   virtualisation.oci-containers.containers = {
     portainer = {
-      image = "portainer/portainer-ee:latest";
+      image = "portainer/portainer-ee:2.18.3";
       ports = ["0.0.0.0:9443:9443"];
       volumes = ["/AppData/portainer:/data" "/var/run/docker.sock:/var/run/docker.sock"];
       #cmd = [];
      };
    };
-
+  # Firewall Ports
+  networking.firewall.allowedTCPPorts = [ 22 80 81 443 9443 ]; #ssh,http,https,npm,portainer
+  networking.firewall.allowedUDPPorts = [ 22 80 81 443 9443 ]; #ssh,http,https,npm,portainer
+  
   documentation.enable = false; # documentation of packages
   documentation.nixos.enable = false; # nixos documentation
   documentation.man.enable = false; # manual pages and the man command
@@ -101,6 +118,6 @@ systemd.services."nc-cron" = {
   system.autoUpgrade.enable = true;
   system.autoUpgrade.allowReboot = false;
   system.copySystemConfiguration = true;
-  system.stateVersion = "22.11";
+  system.stateVersion = "23.05";
 
 }
