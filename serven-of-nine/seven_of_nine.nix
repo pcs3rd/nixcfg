@@ -3,20 +3,12 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:{
-  let
-    impermanence = builtins.fetchTarball "https://github.com/nix-community/impermanence/archive/master.tar.gz";
-  in
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      (import "${impermanence}/nixos.nix")
     ];
-  environment.persistence."/nix/persist/system" = { 
-    directories = [
-      "/etc/nixos"    # bind mounted from /nix/persist/system/etc/nixos to /etc/nixos
-      "/etc/NetworkManager"
-    ];
- # Use systemd-boot  
+
+  # Use systemd-boot  
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit=10;
