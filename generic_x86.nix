@@ -36,12 +36,15 @@ in
     home.stateVersion = "${system_StateVersion}";
 
   #Enable my extensions
-   dconf.settings = {
+  dconf.settings = {
+    "org/gnome/mutter" = {
+      workspaces-only-on-primary = false;
+    };
     "org/gnome/shell" = {
-      command-history = [ "lg" ];
       disable-user-extensions = false;
       disabled-extensions = [ "native-window-placement@gnome-shell-extensions.gcampax.github.com" "screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com" "trayIconsReloaded@selfmade.pl" "workspace-indicator@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "vertical-workspaces@G-dH.github.com" "chrome-kedolomibeipjfpgimbgogkpojhpkgmj-Default.desktop" ];
-      enabled-extensions = [ "apps-menu@gnome-shell-extensions.gcampax.github.com" "just-perfection-desktop@just-perfection" "drive-menu@gnome-shell-extensions.gcampax.github.com" "appindicatorsupport@rgcjonas.gmail.com" "blur-my-shell@aunetx" "dash-to-dock@micxgx.gmail.com" "clipboard-indicator@tudmotu.com" "user-theme@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" ];
+      enabled-extensions = [ "apps-menu@gnome-shell-extensions.gcampax.github.com" "just-perfection-desktop@just-perfection" "drive-menu@gnome-shell-extensions.gcampax.github.com" "appindicatorsupport@rgcjonas.gmail.com" "blur-my-shell@aunetx" "dash-to-dock@micxgx.gmail.com" "clipboard-indicator@tudmotu.com" "user-theme@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" "quick-settings-tweaks@qwreey" "tailscale-status@maxgallup.github.com"];
+      favorite-apps = [ "org.gnome.Console.desktop" "org.gnome.Nautilus.desktop" "google-chrome.desktop" "discord.desktop" "org.prismlauncher.PrismLauncher.desktop" "chrome-ehcljolipkikggmbpmdijefmppdgemlf-Default.desktop" "code.desktop" "slack.desktop" "chrome-cifhbcnohmdccbgoicgdjpfamggdegmo-Default.desktop" "steam.desktop"];
       last-selected-power-profile = "performance";
       welcome-dialog-last-shown-version = "44.0";
     };
@@ -110,6 +113,26 @@ in
       show-on-all-monitors = true;
     };
 
+    "org/gnome/shell/extensions/quick-settings-tweaks" = {
+      add-dnd-quick-toggle-enabled = false;
+      add-unsafe-quick-toggle-enabled = false;
+      disable-adjust-content-border-radius = false;
+      disable-remove-shadow = false;
+      input-always-show = false;
+      input-show-selected = false;
+      last-unsafe-state = false;
+      list-buttons = "[{\"name\":\"Clutter_Actor\",\"label\":null,\"visible\":true},{\"name\":\"SystemItem\",\"label\":null,\"visible\":true},{\"name\":\"OutputStreamSlider\",\"label\":null,\"visible\":true},{\"name\":\"St_BoxLayout\",\"label\":null,\"visible\":true},{\"name\":\"InputStreamSlider\",\"label\":null,\"visible\":false},{\"name\":\"BrightnessItem\",\"label\":null,\"visible\":false},{\"name\":\"NMWiredToggle\",\"label\":null,\"visible\":false},{\"name\":\"NMWirelessToggle\",\"label\":null,\"visible\":true},{\"name\":\"NMModemToggle\",\"label\":null,\"visible\":false},{\"name\":\"NMBluetoothToggle\",\"label\":null,\"visible\":false},{\"name\":\"NMVpnToggle\",\"label\":null,\"visible\":false},{\"name\":\"BluetoothToggle\",\"label\":null,\"visible\":true},{\"name\":\"PowerProfilesToggle\",\"label\":null,\"visible\":true},{\"name\":\"NightLightToggle\",\"label\":\"Night Light\",\"visible\":true},{\"name\":\"DarkModeToggle\",\"label\":\"Dark Style\",\"visible\":true},{\"name\":\"RfkillToggle\",\"label\":\"Airplane Mode\",\"visible\":true},{\"name\":\"RotationToggle\",\"label\":\"Auto Rotate\",\"visible\":false},{\"name\":\"DndQuickToggle\",\"label\":null,\"visible\":true},{\"name\":\"BackgroundAppsToggle\",\"label\":\"No Background Apps\",\"visible\":false},{\"name\":\"MediaSection\",\"label\":null,\"visible\":false},{\"name\":\"Notifications\",\"label\":null,\"visible\":true}]";
+      media-control-compact-mode = false;
+      notifications-enabled = true;
+      notifications-integrated = true;
+      notifications-use-native-controls = true;
+      notifications-hide-when-no-notifications = false;
+      output-show-selected = false;
+      volume-mixer-position = "bottom";
+      volume-mixer-show-description = false;
+      volume-mixer-show-icon = true;
+    };
+
     "org/gnome/shell/world-clocks" = {
       locations = "@av []";
     };
@@ -119,6 +142,7 @@ in
       enable-animations = true;
       clock-show-seconds = true;
     };
+
   };
 };
 #System Packages
@@ -126,18 +150,22 @@ in
     nano
     git 
     curl    
+    dconf2nix
     gnomeExtensions.appindicator
     gnomeExtensions.user-themes
-    gnomeExtensions.tray-icons-reloaded
     gnomeExtensions.dash-to-dock
-    gnomeExtensions.dash-to-dock-animator
     gnomeExtensions.just-perfection
     gnomeExtensions.clipboard-indicator
     gnomeExtensions.blur-my-shell
     gnomeExtensions.user-themes
     gnomeExtensions.quick-settings-tweaker
+    gnomeExtensions.tailscale-status
     gnome.adwaita-icon-theme
-    gparted
+    gnome.gvfs
+    gnome.sushi
+    gnome-browser-connector
+    gnome.networkmanager-l2tp
+    gnome.gnome-boxes
   ];
 
 
