@@ -14,7 +14,7 @@
   boot.loader.systemd-boot.configurationLimit=10;
   boot.loader.timeout = 0;
 
-  networking.hostName = "humptydumpty";
+  networking.hostName = "locutis";
   networking.networkmanager.enable = true;
   networking.firewall.enable = true;
   networking.nftables.enable = true;
