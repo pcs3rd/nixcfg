@@ -61,29 +61,21 @@
     feh
     browsh
     firefox
+    smartmontools
   ];
 
 # Services
   services.openssh = {
     enable = true;
   };
-systemd.timers."nextcloud-cron" = {
-  wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnBootSec = "5m";
-      OnUnitActiveSec = "5m";
-      Unit = "nc-cron.service";
-    };
-};
-systemd.services."nc-cron" = {
-  script = ''
-    ${pkgs.docker}/bin/docker exec -u 33 -t nextcloud-server php -f /var/www/html/cron.php
-  '';
-  serviceConfig = {
-    Type = "oneshot";
-    User= "root";
-  };
-};
+
+# Non container services
+services.tailscale.enable = true;
+# Required for exit node stuff
+  # Support IP forwarding to use this device as a Tailscale exit node.
+  boot.kernel.sysctl."net.ipv4.ip_forward" = true;
+  boot.kernel.sysctl."net.ipv6.conf.all.forwarding" = true;
+
 
 # Containers
   virtualisation.docker.enable = true;
@@ -97,8 +89,8 @@ systemd.services."nc-cron" = {
      };
    };
   # Firewall Ports
-  networking.firewall.allowedTCPPorts = [ 22 80 81 443 9443 ]; #ssh,http,https,npm,portainer
-  networking.firewall.allowedUDPPorts = [ 22 80 81 443 9443 ]; #ssh,http,https,npm,portainer
+  #networking.firewall.allowedTCPPorts = [ 22 80 81 443 9443 ]; #ssh,http,https,npm,portainer
+  #networking.firewall.allowedUDPPorts = [ 22 80 81 443 9443 ]; #ssh,http,https,npm,portainer
   
   documentation.enable = false; # documentation of packages
   documentation.nixos.enable = false; # nixos documentation
