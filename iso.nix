@@ -151,6 +151,8 @@ in
     git 
     curl    
     dconf2nix
+    firefox
+    obs
     gnomeExtensions.appindicator
     gnomeExtensions.user-themes
     gnomeExtensions.dash-to-dock
