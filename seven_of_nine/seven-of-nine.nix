@@ -8,75 +8,47 @@
       ./hardware-configuration.nix
     ];
 
-  # Use systemd-boot  
+# Use systemd-boot  
+  # Support IP forwarding to use this device as a Tailscale exit node.
+  boot.kernel.sysctl."net.ipv4.ip_forward" = true;
+  boot.kernel.sysctl."net.ipv6.conf.all.forwarding" = true;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit=10;
   boot.loader.timeout = 1;
-
-#  networking.interfaces.enp1s0.macAddress = "40:6C:8F:BC:52:2F";
+# Network
   networking.hostName = "sevenofnine";
   networking.networkmanager.enable = true;
   networking.firewall.enable = false;
   networking.nftables.enable = true;
   time.timeZone = "America/New_York";
-
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  #   useXkbConfig = true; # use xkbOptions in tty.
-  # };
-
-  environment.etc."issue.d/ip.issue".text = "\\4\n";
-  networking.dhcpcd.runHook = "${pkgs.utillinux}/bin/agetty --reload";
-
+# User stuff
   users.users.root.hashedPassword = "!";  
   users.users.admin = {
      isNormalUser = true;
      extraGroups = [ "wheel" "docker" "networkmanager" "storage" ]; 
      initialPassword = "changeme";
-     # packages = with pkgs; [     ];
   };
-
-#USE GOOGLE AUTHENTICATOR TOTP CODES FOR SSH
+# USE GOOGLE AUTHENTICATOR TOTP CODES FOR SSH
   security.pam.services = {
     sshd.googleAuthenticator.enable = true;
   };
   services.openssh.settings.ChallengeResponseAuthentication = true;
   services.openssh.settings.PasswordAuthentication = true;
-
+# Environment
+  i18n.defaultLocale = "en_US.UTF-8";
   environment.variables = {
     "EDITOR" = "nano";
   };
-
   environment.systemPackages = with pkgs; [
     nano
-    git
-    docker
-    docker-compose
     google-authenticator
-    tmux
-    feh
-    browsh
-    firefox
+    mtm
     smartmontools
   ];
-
-# Services
-  services.openssh = {
-    enable = true;
-  };
-
-# Non container services
-services.tailscale.enable = true;
-# Required for exit node stuff
-  # Support IP forwarding to use this device as a Tailscale exit node.
-  boot.kernel.sysctl."net.ipv4.ip_forward" = true;
-  boot.kernel.sysctl."net.ipv6.conf.all.forwarding" = true;
-
-
+# Servicses
+  services.openssh.enable = true;
+  services.tailscale.enable = true;
 # Containers
   virtualisation.docker.enable = true;
   virtualisation.oci-containers.backend = "docker";
@@ -85,23 +57,15 @@ services.tailscale.enable = true;
       image = "portainer/portainer-ee:2.18.3";
       ports = ["0.0.0.0:9443:9443"];
       volumes = ["/AppData/portainer:/data" "/var/run/docker.sock:/var/run/docker.sock"];
-      #cmd = [];
      };
-   };
-  # Firewall Ports
-  #networking.firewall.allowedTCPPorts = [ 22 80 81 443 9443 ]; #ssh,http,https,npm,portainer
-  #networking.firewall.allowedUDPPorts = [ 22 80 81 443 9443 ]; #ssh,http,https,npm,portainer
-  
+   }; 
   documentation.enable = false; # documentation of packages
   documentation.nixos.enable = false; # nixos documentation
   documentation.man.enable = false; # manual pages and the man command
   documentation.info.enable = false; # info pages and the info command
   documentation.doc.enable = false; # documentation distributed in packages' /share/doc
-  nixpkgs.config.allowUnfree = true; #need this for my mac's bc chipset
-
   system.autoUpgrade.enable = true;
   system.autoUpgrade.allowReboot = false;
   system.copySystemConfiguration = true;
   system.stateVersion = "23.05";
-
 }
