@@ -56,9 +56,11 @@
     portainer = {
       image = "portainer/portainer-ee:2.18.3";
       ports = ["0.0.0.0:9443:9443"];
-      volumes = ["/AppData/portainer:/data" "/var/run/docker.sock:/var/run/docker.sock"];
+      volumes = ["/Disks/AppData/portainer:/data" "/var/run/docker.sock:/var/run/docker.sock"];
      };
-   }; 
+   };
+# Nix config
+  nix.settings.auto-optimise-store = true;
   documentation.enable = false; # documentation of packages
   documentation.nixos.enable = false; # nixos documentation
   documentation.man.enable = false; # manual pages and the man command
