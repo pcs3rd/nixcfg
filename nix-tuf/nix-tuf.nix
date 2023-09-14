@@ -15,41 +15,46 @@ let
     exec "$@"
   '';
   home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-${system_StateVersion}.tar.gz";
-
+  musnix = builtins.fetchTarball "https://github.com/musnix/musnix/archive/master.tar.gz";
 in
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       (import "${home-manager}/nixos")
+      (import "${musnix}")
 
     ];
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit=5;
-
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ]; #Nixos-mobile development
   networking.hostName = "nix-tuf"; # Define your hostname.
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
   
   programs.dconf.enable = true;
+  nixpkgs.config.packageOverrides = pkgs: { #nur
+    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
+      inherit pkgs;
+    };
+  };
 # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.raymond = { 
     isNormalUser = true;
-    initialPassword = "CHANGEME";
+    initialPassword = "changeme";
     extraGroups = [ "wheel" "audio" "networkmanager" ]; # Enable ‘sudo’ for the user. 
   };
   home-manager.users.raymond = {
     home.homeDirectory = "/home/raymond";
     home.packages = with pkgs; [
         google-chrome
+        firefox
         reaper
-        jellyfin-web
         discord 
         steam
-        spotify
         prismlauncher
  	adoptopenjdk-jre-openj9-bin-16
         openrgb
@@ -58,66 +63,29 @@ in
         libreoffice
         cura
         vscode
-        nodejs
         obs-studio
-	       gh
+	      gh
         vial
         steam-run
         slack
+        tmux
+        darktable
+        vlc
+        audacity
+        android-tools
+        tailscale
+        ardour
+        gphoto2
+        ffmpeg-full
+        v4l-utils
+        pmbootstrap
         #audio plugins
-        vcv-rack
         cardinal
         lsp-plugins
         ladspaPlugins
         zam-plugins
-        synthv1
-        tunefish
         x42-plugins
         aether-lv2
-        petrifoo
-        jamin
-        jaaa
-        cli-visualizer
-        aumix
-        jackmix
-        linssid
-        mamba
-        japa
-        jacktrip
-        wavemon
-        gphoto2
-        ffmpeg-full
-        v4l-utils
-        audacity
-        openscad
-        #WASP-OS development
-        libgccjit
-        libcxx
-        gnumake42
-        sphinx
-        graphviz
-        SDL2
-        SDL2_ttf
-        SDL2_gfx
-        unzip
-        python310Full
-        python310Packages.pillow
-        python310Packages.pexpect
-        python310Packages.click
-        python310Packages.pygobject3
-        python310Packages.numpy
-        python310Packages.pydbus
-        python310Packages.pyserial
-        python310Packages.cbor
-        python310Packages.pysdl2
-        python310Packages.tomli
-        python310Packages.recommonmark
-        python310Packages.cryptography
-        python310Packages.pytest
-        python310Packages.setuptools
-      
-        osu-lazer
-        rcon
     ];
       home.stateVersion = "${system_StateVersion}";
   dconf.settings = {
@@ -127,8 +95,8 @@ in
     "org/gnome/shell" = {
       disable-user-extensions = false;
       disabled-extensions = [ "native-window-placement@gnome-shell-extensions.gcampax.github.com" "screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com" "trayIconsReloaded@selfmade.pl" "workspace-indicator@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "vertical-workspaces@G-dH.github.com" "chrome-kedolomibeipjfpgimbgogkpojhpkgmj-Default.desktop" ];
-      enabled-extensions = [ "apps-menu@gnome-shell-extensions.gcampax.github.com" "just-perfection-desktop@just-perfection" "drive-menu@gnome-shell-extensions.gcampax.github.com" "appindicatorsupport@rgcjonas.gmail.com" "blur-my-shell@aunetx" "dash-to-dock@micxgx.gmail.com" "clipboard-indicator@tudmotu.com" "user-theme@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" ];
-      favorite-apps = [ "org.gnome.Console.desktop" "org.gnome.Nautilus.desktop" "google-chrome.desktop" "discord.desktop" "org.prismlauncher.PrismLauncher.desktop" "chrome-ehcljolipkikggmbpmdijefmppdgemlf-Default.desktop" "code.desktop" "slack.desktop" "chrome-cifhbcnohmdccbgoicgdjpfamggdegmo-Default.desktop" "steam.desktop"];
+      enabled-extensions = [ "apps-menu@gnome-shell-extensions.gcampax.github.com" "just-perfection-desktop@just-perfection" "drive-menu@gnome-shell-extensions.gcampax.github.com" "appindicatorsupport@rgcjonas.gmail.com" "blur-my-shell@aunetx" "dash-to-dock@micxgx.gmail.com" "clipboard-indicator@tudmotu.com" "user-theme@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" "quick-settings-tweaks@qwreey" "tailscale-status@maxgallup.github.com"];
+      favorite-apps = [ "org.gnome.Console.desktop" "org.gnome.Nautilus.desktop" "google-chrome.desktop" "discord.desktop" "org.prismlauncher.PrismLauncher.desktop" "chrome-ehcljolipkikggmbpmdijefmppdgemlf-Default.desktop" "code.desktop" "slack.desktop" "chrome-cifhbcnohmdccbgoicgdjpfamggdegmo-Default.desktop" "steam.desktop" "carla.desktop" "ardour.desktop"];
       last-selected-power-profile = "performance";
       welcome-dialog-last-shown-version = "44.0";
     };
@@ -189,12 +157,34 @@ in
       theme = true;
       workspace-switcher-should-show = true;
       workspaces-in-app-grid = true;
+      panel-indicator-padding-size = 5;
+      pannel-button-padding-size = 5;
     };
 
     "org/gnome/shell/extensions/window-list" = {
       display-all-workspaces = false;
       grouping-mode = "auto";
       show-on-all-monitors = true;
+    };
+
+    "org/gnome/shell/extensions/quick-settings-tweaks" = {
+      add-dnd-quick-toggle-enabled = false;
+      add-unsafe-quick-toggle-enabled = false;
+      disable-adjust-content-border-radius = false;
+      disable-remove-shadow = false;
+      input-always-show = false;
+      input-show-selected = false;
+      last-unsafe-state = false;
+      list-buttons = "[{\"name\":\"Clutter_Actor\",\"label\":null,\"visible\":true},{\"name\":\"SystemItem\",\"label\":null,\"visible\":true},{\"name\":\"OutputStreamSlider\",\"label\":null,\"visible\":true},{\"name\":\"St_BoxLayout\",\"label\":null,\"visible\":true},{\"name\":\"InputStreamSlider\",\"label\":null,\"visible\":false},{\"name\":\"BrightnessItem\",\"label\":null,\"visible\":false},{\"name\":\"NMWiredToggle\",\"label\":null,\"visible\":false},{\"name\":\"NMWirelessToggle\",\"label\":null,\"visible\":true},{\"name\":\"NMModemToggle\",\"label\":null,\"visible\":false},{\"name\":\"NMBluetoothToggle\",\"label\":null,\"visible\":false},{\"name\":\"NMVpnToggle\",\"label\":null,\"visible\":false},{\"name\":\"BluetoothToggle\",\"label\":null,\"visible\":true},{\"name\":\"PowerProfilesToggle\",\"label\":null,\"visible\":true},{\"name\":\"NightLightToggle\",\"label\":\"Night Light\",\"visible\":true},{\"name\":\"DarkModeToggle\",\"label\":\"Dark Style\",\"visible\":true},{\"name\":\"RfkillToggle\",\"label\":\"Airplane Mode\",\"visible\":true},{\"name\":\"RotationToggle\",\"label\":\"Auto Rotate\",\"visible\":false},{\"name\":\"DndQuickToggle\",\"label\":null,\"visible\":true},{\"name\":\"BackgroundAppsToggle\",\"label\":\"No Background Apps\",\"visible\":false},{\"name\":\"MediaSection\",\"label\":null,\"visible\":false},{\"name\":\"Notifications\",\"label\":null,\"visible\":true}]";
+      media-control-compact-mode = false;
+      notifications-enabled = true;
+      notifications-integrated = true;
+      notifications-use-native-controls = true;
+      notifications-hide-when-no-notifications = false;
+      output-show-selected = false;
+      volume-mixer-position = "bottom";
+      volume-mixer-show-description = false;
+      volume-mixer-show-icon = true;
     };
 
     "org/gnome/shell/world-clocks" = {
@@ -206,27 +196,27 @@ in
       enable-animations = true;
       clock-show-seconds = true;
     };
+
   };
 };
- 
+  nixpkgs.config.permittedInsecurePackages = [
+    "electron-11.5.0"
+  ];
   environment.systemPackages = with pkgs; [
     nano
     git 
     curl    
     carla
     nvidia-offload
-    dconf2nix
     gnomeExtensions.appindicator
     gnomeExtensions.user-themes
-    gnomeExtensions.tray-icons-reloaded
     gnomeExtensions.dash-to-dock
-    gnomeExtensions.dash-to-dock-animator
     gnomeExtensions.just-perfection
     gnomeExtensions.clipboard-indicator
     gnomeExtensions.blur-my-shell
     gnomeExtensions.user-themes
     gnomeExtensions.quick-settings-tweaker
-    gnomeExtensions.search-light
+    gnomeExtensions.tailscale-status
     gnome.adwaita-icon-theme
     gnome.gvfs
     gnome.sushi
@@ -237,12 +227,18 @@ in
     yabridgectl
     wineWowPackages.stable 
     winetricks
-    vlc
     cups
     hplip
+    asusctl
   ];
 
   programs.steam.enable = true;
+    #virtualisation
+  virtualisation = {
+    libvirtd.enable = true;
+    waydroid.enable = true;
+    lxd.enable = true;
+  };
   programs.mtr.enable = true;
   programs.gnupg.agent = {
     enable = true;
@@ -251,7 +247,7 @@ in
   services.xserver.excludePackages = with pkgs; [
     xterm
   ];
-  services.openssh.enable = false;
+  services.openssh.enable = true;
   services.xserver.enable = true;
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
@@ -275,16 +271,20 @@ in
   hardware.nvidia.modesetting.enable = true;
   hardware.opengl.enable = true;
   services.xserver.videoDrivers = [ "nvidia" ];
-  services.udev.packages = with pkgs; [ gnome.gnome-settings-daemon ];
-
+  services.udev.packages = with pkgs; [ 
+	gnome.gnome-settings-daemon 
+	android-udev-rules
+];
   services.printing.enable = true;
   services.avahi.enable = true;
   services.avahi.nssmdns = true;
-  # for a WiFi printer
   services.avahi.openFirewall = true;
+  services.tailscale.enable = true;
+  services.asusd.enable = true;
 
   hardware.pulseaudio.enable = false;
-  sound.enable = true;
+  sound.enable = true;  
+  musnix.enable = true;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -295,27 +295,35 @@ in
   };
 
   environment.sessionVariables = rec { #set default session latency
-    PIPEWIRE_LATENCY = "64/48000";
+    PIPEWIRE_LATENCY = "256/48000";
   };
+  #Do fancy v4l2loopback stuffs
   programs.bash.shellAliases = {
     dslr2loopback = "gphoto2 --stdout --capture-movie | ffmpeg -i - -vcodec rawvideo -pix_fmt yuv420p -threads 0 -f v4l2 /dev/video1";
   };
-
 	#Prime offloading maybe?
   hardware.nvidia.prime = {
     offload.enable = lib.mkForce true;
     amdgpuBusId = "PCI:6:0:0";
     nvidiaBusId = "PCI:1:0:0";
   };
-
+  #VIAL HID RULE
    services.udev.extraRules = '' #VIAL udev rules
       KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{serial}=="*vial:f64c2b3c*", MODE="0660", GROUP="users", TAG+="uaccess", TAG+="udev-acl"
   '';
-
+  
+  systemd.services.NetworkManager-wait-online = {
+    serviceConfig = {
+      ExecStart = [ "" "$pkgs.networkmanager}/bin/nmonline -q" ];
+      Restart = "on-failure";
+      RestartSec = 1;
+    };
+  };
   networking.firewall.enable = false;
   nixpkgs.config.allowUnfree = true;
   system.copySystemConfiguration = true;
   nix.settings.experimental-features = [ "flakes" "nix-command" ];
   system.stateVersion = "${system_StateVersion}"; # Did you read the comment?
+  boot.supportedFilesystems = [ "ntfs" ];
 }
 
