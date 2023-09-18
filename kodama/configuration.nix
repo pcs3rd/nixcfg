@@ -18,7 +18,7 @@ in
   #mobile.boot.stage-1.splash.enable = false;
   users.users.raymond = {
     isNormalUser = true;
-    initialPassword = "changeme;
+    initialPassword = "changeme";
     extraGroups = [ "wheel" "networkmanager" ];
   };
   home-manager.users.raymond = {
