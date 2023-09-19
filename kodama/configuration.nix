@@ -1,44 +1,45 @@
 { config, pkgs, lib, ... }:
-let
+let 
   system_StateVersion = "23.05";
+  mobile-nixos = builtins.fetchTarball "https://github.com/pcs3rd/mobile-nixos/archive/master.tar.gz";
   home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-${system_StateVersion}.tar.gz";
 in
 {
   imports = [
-      (import "${home-manager}/nixos")
+    (import "${mobile-nixos}/lib/configuration.nix" { device = "lenovo-kodama"; })
+    (import "${home-manager}/nixos")
   ];
-  networking.hostName = "nix-kodama";
+
+  networking.hostName = "nixos-kodama";
   networking.networkmanager.enable = true;
   networking.firewall.enable = false;
-
-
+    
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
-
-  #mobile.boot.stage-1.splash.enable = false;
+  
   users.users.raymond = {
     isNormalUser = true;
     initialPassword = "changeme";
     extraGroups = [ "wheel" "networkmanager" ];
   };
   home-manager.users.raymond = {
-    home.homeDirectory = "/home/raymond";
     home.packages = with pkgs; [
-        firefox
-        tailscale
-        tmux 
-    ];    
+      tmux
+      git
+      nano
+      curl 
+      firefox-wayland
+      chromium
+      carla
+    ];
     home.stateVersion = "${system_StateVersion}";
-  dconf.settings = {
+   dconf.settings = {
     "org/gnome/mutter" = {
       workspaces-only-on-primary = false;
     };
     "org/gnome/shell" = {
       disable-user-extensions = false;
-      disabled-extensions = [ "native-window-placement@gnome-shell-extensions.gcampax.github.com" "screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com" "trayIconsReloaded@selfmade.pl" "workspace-indicator@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "vertical-workspaces@G-dH.github.com" "chrome-kedolomibeipjfpgimbgogkpojhpkgmj-Default.desktop" ];
-      enabled-extensions = [ "apps-menu@gnome-shell-extensions.gcampax.github.com" "just-perfection-desktop@just-perfection" "drive-menu@gnome-shell-extensions.gcampax.github.com" "appindicatorsupport@rgcjonas.gmail.com" "blur-my-shell@aunetx" "dash-to-dock@micxgx.gmail.com" "clipboard-indicator@tudmotu.com" "user-theme@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" "quick-settings-tweaks@qwreey" "tailscale-status@maxgallup.github.com"];
-      favorite-apps = [ "org.gnome.Console.desktop" "org.gnome.Nautilus.desktop" "google-chrome.desktop" "discord.desktop" "org.prismlauncher.PrismLauncher.desktop" "chrome-ehcljolipkikggmbpmdijefmppdgemlf-Default.desktop" "code.desktop" "slack.desktop" "chrome-cifhbcnohmdccbgoicgdjpfamggdegmo-Default.desktop" "steam.desktop" "carla.desktop" "ardour.desktop"];
-      last-selected-power-profile = "performance";
+      enabled-extensions = [ "just-perfection-desktop@just-perfection" "drive-menu@gnome-shell-extensions.gcampax.github.com" "appindicatorsupport@rgcjonas.gmail.com" "dash-to-dock@micxgx.gmail.com" "clipboard-indicator@tudmotu.com" "user-theme@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" "quick-settings-tweaks@qwreey" "tailscale-status@maxgallup.github.com" "blur-my-shell@aunetx"];
       welcome-dialog-last-shown-version = "44.0";
     };
 
@@ -137,63 +138,10 @@ in
       enable-animations = true;
       clock-show-seconds = true;
     };
-   };
+
   };
-    environment.systemPackages = with pkgs; [
-    nano
-    git 
-    curl    
-    carla
-    gnomeExtensions.appindicator
-    gnomeExtensions.user-themes
-    gnomeExtensions.dash-to-dock
-    gnomeExtensions.just-perfection
-    gnomeExtensions.clipboard-indicator
-    gnomeExtensions.blur-my-shell
-    gnomeExtensions.user-themes
-    gnomeExtensions.quick-settings-tweaker
-    gnomeExtensions.tailscale-status
-    gnome.adwaita-icon-theme
-    gnome.gvfs
-    gnome.sushi
-    gnome-browser-connector
-  ];
-  environment.gnome.excludePackages = (with pkgs; [
-      gnome-photos
-      gnome-tour
-    ]) ++ (with pkgs.gnome; [
-      gnome-weather
-      gnome-maps
-      gnome-calendar
-      gnome-clocks
-      cheese # webcam tool
-      gnome-music
-      gedit # text editor
-      epiphany # web browser
-      geary # email reader
-      evince # document viewer
-      totem # video player
-    ]);
-  environment.sessionVariables = rec { #set default session latency
-    PIPEWIRE_LATENCY = "256/48000";
   };
-  programs.dconf.enable = true;
-  programs.mtr.enable = true;
-  programs.gnupg.agent = {
-    enable = true;
-    enableSSHSupport = true;
-  };
-  #VIAL HID RULE
-   services.udev.extraRules = '' #VIAL udev rules
-      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{serial}=="*vial:f64c2b3c*", MODE="0660", GROUP="users", TAG+="uaccess", TAG+="udev-acl"
-  '';
-  services.openssh.enable = true;
-  services.printing.enable = true;
-  services.avahi.enable = true;
-  services.avahi.nssmdns = true;
-  services.avahi.openFirewall = true;
-  services.tailscale.enable = true;
-  security.rtkit.enable = true;
+  sound.enable = true;  
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -201,21 +149,59 @@ in
     pulse.enable = true;
     jack.enable = true;
   };
+  services.tailscale.enable = true;
   services.xserver.enable = true;
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
-  services.udev.packages = with pkgs; [ 
-	gnome.gnome-settings-daemon 
+  services.xserver.excludePackages = with pkgs; [
+    xterm
   ];
-  virtualisation = {
-    libvirtd.enable = true;
-    waydroid.enable = true;
-    lxd.enable = true;
+  environment.sessionVariables = rec { #set default session latency
+    PIPEWIRE_LATENCY = "256/48000";
   };
-  hardware.opengl.enable = true;
+  environment.gnome.excludePackages = (with pkgs; [
+    baobab
+    gnome-photos
+    gnome-tour
+  ]) ++ (with pkgs.gnome; [
+    gnome-calendar
+    gnome-weather
+    gnome-maps
+    gnome-calculator
+    gnome-contacts
+    simple-scan
+    eog
+    yelp
+    cheese
+    gnome-music
+    epiphany
+    geary
+    evince
+    gnome-characters
+    totem
+    tali
+    hitori
+    atomix
+  ]);
+  environment.systemPackages = with pkgs; [
+    gnomeExtensions.appindicator
+    gnomeExtensions.user-themes
+    gnomeExtensions.dash-to-dock
+    gnomeExtensions.just-perfection
+    gnomeExtensions.clipboard-indicator
+    gnomeExtensions.blur-my-shell
+    gnomeExtensions.quick-settings-tweaker
+    gnomeExtensions.tailscale-status
+    gnome.adwaita-icon-theme
+    gnome.gvfs
+    gnome-browser-connector
+  ];
+  programs.dconf.enable = true;
   hardware.pulseaudio.enable = false;
-  sound.enable = true;  
+  hardware.opengl.enable = true;
+  hardware.sensor.iio.enable = false;
+  hardware.firmware = [ config.mobile.device.firmware ];
+  services.openssh.enable = false;
   nix.settings.experimental-features = [ "flakes" "nix-command" ];
-  system.stateVersion = "${system_StateVersion}"; # Did you read the comment?
-
+  system.stateVersion = "${system_StateVersion}";
 }
