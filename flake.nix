@@ -2,11 +2,18 @@
 description = "My personal flake.nix";
 
 inputs ={
+    # Upstream nixpkgs
     nixpkgs.url = github:NixOS/nixpkgs;
+    
+    # Home-manager 
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Community packages; used for Firefox extensions
+    nur.url = "github:nix-community/nur";
+    
 };
   
   home-manager.url = github:nix-community/home-manager;
