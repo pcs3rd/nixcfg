@@ -15,14 +15,12 @@ let
     exec "$@"
   '';
   home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-${system_StateVersion}.tar.gz";
-  musnix = builtins.fetchTarball "https://github.com/musnix/musnix/archive/master.tar.gz";
 in
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       (import "${home-manager}/nixos")
-      (import "${musnix}")
 
     ];
   # Use the systemd-boot EFI boot loader.
@@ -36,16 +34,11 @@ in
   i18n.defaultLocale = "en_US.UTF-8";
   
   programs.dconf.enable = true;
-  nixpkgs.config.packageOverrides = pkgs: { #nur
-    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
-      inherit pkgs;
-    };
-  };
 # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.raymond = { 
     isNormalUser = true;
-    initialPassword = "changeme";
-    extraGroups = [ "wheel" "audio" "networkmanager" ]; # Enable ‘sudo’ for the user. 
+    initialPassword = "";
+    extraGroups = [ "wheel" "audio" "networkmanager" "libvirtd" ]; # Enable ‘sudo’ for the user. 
   };
   home-manager.users.raymond = {
     home.homeDirectory = "/home/raymond";
@@ -64,6 +57,7 @@ in
         cura
         vscode
         obs-studio
+        virt-manager
 	      gh
         vial
         steam-run
@@ -95,7 +89,7 @@ in
     "org/gnome/shell" = {
       disable-user-extensions = false;
       disabled-extensions = [ "native-window-placement@gnome-shell-extensions.gcampax.github.com" "screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com" "trayIconsReloaded@selfmade.pl" "workspace-indicator@gnome-shell-extensions.gcampax.github.com" "windowsNavigator@gnome-shell-extensions.gcampax.github.com" "vertical-workspaces@G-dH.github.com" "chrome-kedolomibeipjfpgimbgogkpojhpkgmj-Default.desktop" ];
-      enabled-extensions = [ "apps-menu@gnome-shell-extensions.gcampax.github.com" "just-perfection-desktop@just-perfection" "drive-menu@gnome-shell-extensions.gcampax.github.com" "appindicatorsupport@rgcjonas.gmail.com" "blur-my-shell@aunetx" "dash-to-dock@micxgx.gmail.com" "clipboard-indicator@tudmotu.com" "user-theme@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" "quick-settings-tweaks@qwreey" "tailscale-status@maxgallup.github.com"];
+      enabled-extensions = [ "just-perfection-desktop@just-perfection" "drive-menu@gnome-shell-extensions.gcampax.github.com" "appindicatorsupport@rgcjonas.gmail.com" "clipboard-indicator@tudmotu.com" "user-theme@gnome-shell-extensions.gcampax.github.com" "places-menu@gnome-shell-extensions.gcampax.github.com" "quick-settings-tweaks@qwreey" "tailscale-status@maxgallup.github.com"];
       favorite-apps = [ "org.gnome.Console.desktop" "org.gnome.Nautilus.desktop" "google-chrome.desktop" "discord.desktop" "org.prismlauncher.PrismLauncher.desktop" "chrome-ehcljolipkikggmbpmdijefmppdgemlf-Default.desktop" "code.desktop" "slack.desktop" "chrome-cifhbcnohmdccbgoicgdjpfamggdegmo-Default.desktop" "steam.desktop" "carla.desktop" "ardour.desktop"];
       last-selected-power-profile = "performance";
       welcome-dialog-last-shown-version = "44.0";
@@ -155,10 +149,13 @@ in
       notification-banner-position = 1;
       search = false;
       theme = true;
+      panel = false;
+      panel-in-overview = true;
       workspace-switcher-should-show = true;
       workspaces-in-app-grid = true;
       panel-indicator-padding-size = 5;
       pannel-button-padding-size = 5;
+      startup-status = 0;
     };
 
     "org/gnome/shell/extensions/window-list" = {
@@ -210,10 +207,8 @@ in
     nvidia-offload
     gnomeExtensions.appindicator
     gnomeExtensions.user-themes
-    gnomeExtensions.dash-to-dock
     gnomeExtensions.just-perfection
     gnomeExtensions.clipboard-indicator
-    gnomeExtensions.blur-my-shell
     gnomeExtensions.user-themes
     gnomeExtensions.quick-settings-tweaker
     gnomeExtensions.tailscale-status
@@ -284,7 +279,6 @@ in
 
   hardware.pulseaudio.enable = false;
   sound.enable = true;  
-  musnix.enable = true;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
